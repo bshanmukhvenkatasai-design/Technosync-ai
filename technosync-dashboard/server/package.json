@@ -1,0 +1,16 @@
+{
+  "name": "technosync-backend",
+  "version": "1.0.0",
+  "description": "TechnoSync AI local backend server",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test-health.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {},
+  "private": true
+}
