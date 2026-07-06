@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicConnect - Citizen & MP Platform Prototype</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --gray: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Global Header Space */
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo-area p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .portal-switcher {
+            display: flex;
+            gap: 0.5rem;
+            background-color: rgba(255,255,255,0.1);
+            padding: 0.3rem;
+            border-radius: 8px;
+        }
+
+        .portal-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            opacity: 0.7;
+        }
+
+        .portal-btn.active {
+            background-color: var(--white);
+            color: var(--primary);
+            opacity: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Layout Framework */
+        .app-container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Navigation Sidebar */
+        sidebar {
+            width: 260px;
+            background-color: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--light);
+        }
+
+        .nav-btn.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        /* Main View Container */
+        main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Content Elements & Cards */
+        .portal-section {
+            display: none;
+        }
+
+        .portal-section.active {
+            display: block;
+        }
+
+        .view-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.75rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn {
+            background-color: var(--primary-light);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary);
+        }
+
+        /* Simulated Layout Utilities */
+        .mock-map {
+            background: #cbd5e1;
+            height: 350px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px dashed #94a3b8;
+        }
+
+        .map-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            box-shadow: 0 0 8px var(--danger);
+            cursor: pointer;
+        }
+
+        /* Interactive Voice Utility */
+        .voice-pulse-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            gap: 1.5rem;
+        }
+
+        .record-trigger-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .record-trigger-btn.recording {
+            animation: pulse-ring 1.5s infinite;
+            background-color: #b91c1c;
+        }
+
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Tables and Listings */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background-color: var(--white);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background-color: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-warning { background-color: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .badge-danger { background-color: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* Chat Container Layout */
+        .chat-frame {
+            height: 300px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            background-color: #fafafa;
+        }
+
+        .chat-bubble {
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            max-width: 80%;
+            font-size: 0.95rem;
+        }
+
+        .chat-bubble.user {
+            background-color: var(--primary-light);
+            color: var(--white);
+            margin-left: auto;
+        }
+
+        .chat-bubble.ai {
+            background-color: var(--border);
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Unified Application Header -->
+    <header>
+        <div class="logo-area">
+            <h1>CivicConnect AI</h1>
+            <p>Unified Multi-Lingual Regional Development Engine</p>
+        </div>
+        <div class="portal-switcher">
+            <button class="portal-btn active" onclick="switchPortal('citizen')">Citizen Panel</button>
+            <button class="portal-btn" onclick="switchPortal('mp')">MP Dashboard</button>
+            <button class="portal-btn" onclick="switchPortal('admin')">Admin Portal</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Interactive Structural Sidebar Navigation -->
+        <sidebar>
+            <!-- Citizen Nav Configuration -->
+            <div id="nav-citizen" class="nav-group">
+                <div class="sidebar-title">Citizen Options</div>
+                <button class="nav-btn active" onclick="switchView('citizen', 'home')">Home</button>
+                <button class="nav-btn" onclick="switchView('citizen', 'login')">Login/Register</button>
+                <button class="nav-btn" onclick="switchView('citizen', 'submit')">Submit Complaint</button>
+                <button class="nav-btn" onclick="switchView('citizen', 'voice')">Voice Complaint</button>
+                <button class="nav-btn" onclick="switchView('citizen', 'chatbot')">AI Chatbot</button>
+            </div>
+
+            <!-- MP Nav Configuration -->
+            <div id="nav-mp" class="nav-group" style="display: none;">
+                <div class="sidebar-title">MP Analytical Tools</div>
+                <button class="nav-btn" onclick="switchView('mp', 'overview')">Dashboard Overview</button>
+                <button class="nav-btn" onclick="switchView('mp', 'analysis')">Complaint Analysis</button>
+                <button class="nav-btn" onclick="switchView('mp', 'map')">Interactive Map</button>
+                <button class="nav-btn" onclick="switchView('mp', 'ai-rec')">AI Recommendation</button>
+                <button class="nav-btn" onclick="switchView('mp', 'budget')">Budget Planner</button>
+                <button class="nav-btn" onclick="switchView('mp', 'tracker')">Project Tracker</button>
+                <button class="nav-btn" onclick="switchView('mp', 'reports')">Reports</button>
+            </div>
+
+            <!-- Admin Nav Configuration -->
+            <div id="nav-admin" class="nav-group" style="display: none;">
+                <div class="sidebar-title">Admin Management</div>
+                <button class="nav-btn" onclick="switchView('admin', 'verify')">Verify Complaints</button>
+                <button class="nav-btn" onclick="switchView('admin', 'users')">Manage Users</button>
+                <button class="nav-btn" onclick="switchView('admin', 'projects')">Manage Projects</button>
+                <button class="nav-btn" onclick="switchView('admin', 'analytics')">Analytics</button>
+            </div>
+        </sidebar>
+
+        <!-- Dynamic Context Content Window -->
+        <main>
+            <!-- ================= CITIZEN PORTAL VIEWS ================= -->
+            <div id="portal-citizen" class="portal-section active">
+                <div id="view-citizen-home" class="view-panel active">
+                    <h2>Welcome to CivicConnect</h2>
+                    <p style="margin-bottom: 1.5rem;">Empowering citizens to voice their localized regional infrastructural demands in their native dialect or language.</p>
+                    <div class="grid-3">
+                        <div class="card">
+                            <h3>Submit Requests</h3>
+                            <p>File written structural grievances or include geolocation pictures directly to the municipal tracker.</p>
+                        </div>
+                        <div class="card">
+                            <h3>Voice AI Processing</h3>
+                            <p>No typing required. Hold down and record your issue in any language or dialect smoothly.</p>
+                        </div>
+                        <div class="card">
+                            <h3>AI Assistance</h3>
+                            <p>Interact with our intelligent virtual assistant to check status configurations or receive immediate policy details.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-citizen-login" class="view-panel">
+                    <h2>Citizen Authentication Portal</h2>
+                    <div class="card" style="max-width: 450px; margin: 0 auto;">
+                        <div class="form-group">
+                            <label>Mobile Number / Email ID</label>
+                            <input type="text" class="form-control" placeholder="Enter identification parameters">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" class="form-control" placeholder="••••••••">
+                        </div>
+                        <button class="btn" onclick="alert('Access verification simulation complete.')">Authenticate / Register</button>
+                    </div>
+                </div>
+
+                <div id="view-citizen-submit" class="view-panel">
+                    <h2>Submit Standard Development Suggestion</h2>
+                    <div class="card" style="max-width: 650px;">
+                        <div class="form-group">
+                            <label>Primary Infrastructure Sector</label>
+                            <select class="form-control">
+                                <option>Water Pipeline Expansion</option>
+                                <option>Road Resurfacing & Transit</option>
+                                <option>Sanitation & Slum Blocks</option>
+                                <option>Streetlights & Public Safety</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Detailed Description</label>
+                            <textarea class="form-control" rows="4" placeholder="Detail the structural issue or expansion scope..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Attach Verification Photograph</label>
+                            <input type="file" class="form-control">
+                        </div>
+                        <button class="btn" onclick="alert('Submission cataloged inside ingestion stream queue.')">Submit Grievance</button>
+                    </div>
+                </div>
+
+                <div id="view-citizen-voice" class="view-panel">
+                    <h2>Multi-Lingual Voice Suggestion Ingestion</h2>
+                    <div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+                        <p style="margin-bottom: 1rem;">Tap the trigger mechanism below and state your regional development requirement natively.</p>
+                        <div class="voice-pulse-container">
+                            <button id="voice-btn" class="record-trigger-btn" onclick="toggleVoiceCapture()">🎙️</button>
+                            <div id="voice-status" style="font-weight: 600; color: var(--gray);">Pipeline Idle</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-citizen-chatbot" class="view-panel">
+                    <h2>Civic Interactive AI Chatbot</h2>
+                    <div class="card" style="max-width: 700px;">
+                        <div class="chat-frame" id="chat-frame">
+                            <div class="chat-bubble ai">Greetings! I am your municipal parsing assistant. Tell me what neighborhood issue you are experiencing today.</div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="chat-input" class="form-control" placeholder="Ask about grievance state metrics...">
+                            <button class="btn" onclick="handleChatInteraction()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= MP PORTAL VIEWS ================= -->
+            <div id="portal-mp" class="portal-section">
+                <div id="view-mp-overview" class="view-panel">
+                    <h2>Dashboard Overview</h2>
+                    <div class="grid-3">
+                        <div class="card" style="border-left: 5px solid var(--primary-light);">
+                            <p style="color: var(--gray);">Gross Unprocessed Submissions</p>
+                            <h3 style="font-size: 2rem; margin: 0.5rem 0;">1,482</h3>
+                            <span class="badge badge-warning">+12% this cycle</span>
+                        </div>
+                        <div class="card" style="border-left: 5px solid var(--success);">
+                            <p style="color: var(--gray);">Approved Project Operations</p>
+                            <h3 style="font-size: 2rem; margin: 0.5rem 0;">34 Active</h3>
+                            <span class="badge badge-success">On Schedule</span>
+                        </div>
+                        <div class="card" style="border-left: 5px solid var(--danger);">
+                            <p style="color: var(--gray);">Critical Budget Overhead</p>
+                            <h3 style="font-size: 2rem; margin: 0.5rem 0;">74.2% Alloc</h3>
+                            <span class="badge badge-danger">High Resource Draw</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-mp-analysis" class="view-panel">
+                    <h2>Dynamic Sector Complaint Analysis</h2>
+                    <div class="card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Theme Classification</th>
+                                    <th>Submission Volume</th>
+                                    <th>AI Urgency Index</th>
+                                    <th>Primary Ingestion Vector</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Water Table/Contamination</td>
+                                    <td>642 entries</td>
+                                    <td><span class="badge badge-danger">Critical</span></td>
+                                    <td>Voice Notes (Hindi/Telugu)</td>
+                                </tr>
+                                <tr>
+                                    <td>Pothole Cluster Failures</td>
+                                    <td>412 entries</td>
+                                    <td><span class="badge badge-warning">Medium</span></td>
+                                    <td>WhatsApp Image Uploads</td>
+                                </tr>
+                                <tr>
+                                    <td>Streetlight Structural Gaps</td>
+                                    <td>218 entries</td>
+                                    <td><span class="badge badge-success">Low</span></td>
+                                    <td>Web Ingestion Portal</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="view-mp-map" class="view-panel">
+                    <h2>Geospatial Demand Hotspot Mapping</h2>
+                    <div class="card">
+                        <p style="margin-bottom: 1rem;">Visualizing high-density clusters based on extracted metadata and incoming citizen geolocation coordinates.</p>
+                        <div class="mock-map">
+                            <div class="map-dot" style="top: 25%; left: 40%;" onclick="alert('Hotspot Area A: 234 Water Infrastructure Demands')"></div>
+                            <div class="map-dot" style="top: 60%; left: 75%;" onclick="alert('Hotspot Area B: 112 Safety/Streetlight Requests')"></div>
+                            <div class="map-dot" style="top: 45%; left: 20%;" onclick="alert('Hotspot Area C: 320 Road Resurfacing Submissions')"></div>
+                            <strong>[Simulated Geospatial Mapping GIS Layer]</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-mp-ai-rec" class="view-panel">
+                    <h2>AI Multi-Factor Recommendations</h2>
+                    <div class="card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Recommended Project Target</th>
+                                    <th>Synthesis Score</th>
+                                    <th>Budgetary Scope Target</th>
+                                    <th>Execution Priority Tag</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Ward 5 Integrated Water Pipeline</strong></td>
+                                    <td>94.6 / 100</td>
+                                    <td>$120,000 Allocation</td>
+                                    <td><span class="badge badge-danger">Immediate Action</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Village Road Drainage Resurfacing</strong></td>
+                                    <td>81.2 / 100</td>
+                                    <td>$85,000 Allocation</td>
+                                    <td><span class="badge badge-warning">High Priority</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sector 3 Smart Grid Streetlighting</strong></td>
+                                    <td>63.8 / 100</td>
+                                    <td>$40,000 Allocation</td>
+                                    <td><span class="badge badge-success">Defferable</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="view-mp-budget" class="view-panel">
+                    <h2>Regional Capital Budget Planner</h2>
+                    <div class="card" style="max-width: 600px;">
+                        <div class="form-group">
+                            <label>Available Development Funds Pool</label>
+                            <input type="text" class="form-control" value="$2,500,000" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Socio-Demographic Urgency Padding</label>
+                            <input type="range" class="form-control" min="0" max="100" value="75">
+                        </div>
+                        <button class="btn" onclick="alert('Budget parameters adjusted dynamically for the matching cycle.')">Simulate Allocation</button>
+                    </div>
+                </div>
+
+                <div id="view-mp-tracker" class="view-panel">
+                    <h2>Project Lifecycle Tracker</h2>
+                    <div class="card">
+                        <div class="form-group">
+                            <strong>Ward 5 Pipeline Structural Overhaul</strong>
+                            <div style="background:#e5e7eb; border-radius: 4px; height: 20px; margin-top: 0.5rem; overflow:hidden;">
+                                <div style="background: var(--success); width: 68%; height:100%; text-align:right; color:white; font-size:0.8rem; padding-right:5px; line-height:20px;">68%</div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <strong>Village Road Structural Base Casting</strong>
+                            <div style="background:#e5e7eb; border-radius: 4px; height: 20px; margin-top: 0.5rem; overflow:hidden;">
+                                <div style="background: var(--warning); width: 32%; height:100%; text-align:right; color:white; font-size:0.8rem; padding-right:5px; line-height:20px;">32%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-mp-reports" class="view-panel">
+                    <h2>Analytical Export Suite & Reports</h2>
+                    <div class="card">
+                        <p style="margin-bottom: 1rem;">Compile all ingested citizen sentiment variables and demographic datasets into a structured file output.</p>
+                        <button class="btn" onclick="alert('Generating PDF executive data report...')">Export PDF Briefing</button>
+                        <button class="btn" style="background-color:var(--success)" onclick="alert('Exporting localized GeoJSON structural vector sets...')">Export Spatial Dataset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= ADMIN PORTAL VIEWS ================= -->
+            <div id="portal-admin" class="portal-section">
+                <div id="view-admin-verify" class="view-panel">
+                    <h2>Grievance Verification Gate</h2>
+                    <div class="card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Incident ID</th>
+                                    <th>Extracted Core Details</th>
+                                    <th>Source Language</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#9841</td>
+                                    <td>Open drainage structural hazard near primary school perimeter.</td>
+                                    <td>Natively Bengali (Translated)</td>
+                                    <td>
+                                        <button class="btn" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="alert('Verified and committed to calculation stream.')">Approve</button>
+                                        <button class="btn" style="padding:0.4rem 0.8rem; font-size:0.85rem; background-color:var(--danger);" onclick="alert('Rejected as duplicate record.')">Flag Duplicate</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="view-admin-users" class="view-panel">
+                    <h2>User Access Matrix Control</h2>
+                    <div class="card">
+                        <p style="margin-bottom: 1rem;">Manage team authorizations, regional surveyors, and processing staff access profiles.</p>
+                        <button class="btn" onclick="alert('Opening secure credentials management matrix...')">Provision New Operator Identity</button>
+                    </div>
+                </div>
+
+                <div id="view-admin-projects" class="view-panel">
+                    <h2>Master Project Catalog Overrides</h2>
+                    <div class="card">
+                        <p style="margin-bottom: 1rem;">Manually inject overriding development works or modify strict constraint bounds for engineering contracts.</p>
+                        <button class="btn" onclick="alert('Opening contract constraint override panels...')">Inject Administrative Directive</button>
+                    </div>
+                </div>
+
+                <div id="view-admin-analytics" class="view-panel">
+                    <h2>System Analytics & Performance Audits</h2>
+                    <div class="card">
+                        <p>Total API Transactions: <strong>482,192 calls</strong></p>
+                        <p>Translation Model Average Latency: <strong>230ms</strong></p>
+                        <p>Whisper Audio Chunk Translation Success Rate: <strong>98.4%</strong></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Interface Navigation Logic Engine -->
+    <script>
+        // Global variables state configurations
+        let currentPortal = 'citizen';
+        let isRecording = false;
+
+        // Switches view architectures across separate user roles
+        function switchPortal(portalId) {
+            currentPortal = portalId;
+            
+            // Toggle global top level tab styling indicators
+            document.querySelectorAll('.portal-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Hide and reveal associated workspace context structures
+            document.querySelectorAll('.portal-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`portal-${portalId}`).classList.add('active');
+
+            // Hide and reveal context navigation structures within sidebar
+            document.querySelectorAll('.nav-group').forEach(group => group.style.display = 'none');
+            document.getElementById(`nav-${portalId}`).style.display = 'block';
+
+            // Auto navigate system index views for selected spaces
+            let targetView = 'home';
+            if (portalId === 'mp') targetView = 'overview';
+            if (portalId === 'admin') targetView = 'verify';
+            
+            switchView(portalId, targetView);
+        }
+
+        // Switches specific view layouts inside a selected role
+        function switchView(portalId, viewId) {
+            // Unset structural styling references for sidebar selectors
+            document.querySelectorAll(`#nav-${portalId} .nav-btn`).forEach(btn => btn.classList.remove('active'));
+            
+            // Set dynamic click visual configurations
+            const clickedBtn = Array.from(document.querySelectorAll(`#nav-${portalId} .nav-btn`)).find(btn => 
+                btn.getAttribute('onclick').includes(`'${viewId}'`)
+            );
+            if (clickedBtn) clickedBtn.classList.add('active');
+
+            // Toggle view visibility boundaries
+            document.querySelectorAll(`#portal-${portalId} .view-panel`).forEach(panel => panel.classList.remove('active'));
+            const targetPanel = document.getElementById(`view-${portalId}-${viewId}`);
+            if (targetPanel) targetPanel.classList.add('active');
+        }
+
+        // Simulates multi-lingual audio capturing activities
+        function toggleVoiceCapture() {
+            const btn = document.getElementById('voice-btn');
+            const status = document.getElementById('voice-status');
+            
+            if (!isRecording) {
+                isRecording = true;
+                btn.classList.add('recording');
+                status.innerText = "Listening to raw audio stream... Speak now.";
+                status.style.color = "var(--danger)";
+            } else {
+                isRecording = false;
+                btn.classList.remove('recording');
+                status.innerText = "Pipeline processing buffer... Ingesting.";
+                status.style.color = "var(--warning)";
+                
+                setTimeout(() => {
+                    status.innerText = "Pipeline Ingested. Match Found: 'Repair broken water valve near block C' (Translated from native dialect).";
+                    status.style.color = "var(--success)";
+                }, 1800);
+            }
+        }
+
+        // Simulates continuous AI Conversational loops
+        function handleChatInteraction() {
+            const input = document.getElementById('chat-input');
+            const container = document.getElementById('chat-frame');
+            
+            if (!input.value.trim()) return;
+
+            // Generate user dialogue component elements
+            const userBubble = document.createElement('div');
+            userBubble.className = "chat-bubble user";
+            userBubble.innerText = input.value;
+            container.appendChild(userBubble);
+            
+            const promptValue = input.value.toLowerCase();
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Compute automated mock analytics responses
+            setTimeout(() => {
+                const aiBubble = document.createElement('div');
+                aiBubble.className = "chat-bubble ai";
+                
+                if (promptValue.includes('status') || promptValue.includes('complaint')) {
+                    aiBubble.innerText = "Parsing records... Incident #9841 shows verification approval by municipal engineering staff. Capital cost allocation pending score evaluation.";
+                } else if (promptValue.includes('road') || promptValue.includes('water')) {
+                    aiBubble.innerText = "Our hot-spot clustering engines have marked 3 separate incidents relating to that category inside your sector cluster bounds.";
+                } else {
+                    aiBubble.innerText = "Understood. The telemetry has been committed to our processing queue to weigh against regional census demographic parameters.";
+                }
+                
+                container.appendChild(aiBubble);
+                container.scrollTop = container.scrollHeight;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
