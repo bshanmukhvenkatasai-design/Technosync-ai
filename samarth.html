@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#020617]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samarth - AI Civic Development Engine</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Modern Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+
+        /* Custom glow styles for high premium dark aesthetic */
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+        }
+        .glow-text-blue {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        .glow-red {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
+        }
+
+        /* Continuous pulse for voice ingestion utility */
+        @keyframes custom-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+        }
+        .recording-pulse {
+            animation: custom-pulse 1.8s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-full text-[#e2e8f0] font-sans antialiased flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- Unified Premium Header Banner -->
+    <header class="flex items-center justify-between px-6 py-4 bg-[#090d16] border-b border-[#1e293b] sticky top-0 z-50">
+        <!-- Logo Section -->
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-blue-600/10 rounded-lg border border-blue-500/30 glow-blue">
+                <svg class="w-6 h-6 text-blue-500 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0012 20c-1.06 0-2.083-.146-3.054-.421A11.386 11.386 0 0112 18c.88 0 1.727-.101 2.54-.294M15 19.128A11.336 11.336 0 0012 18c-.859 0-1.69.1-2.486.293M12 3a9 9 0 000 18H12m0-18C6.477 3 2 7.477 2 12s4.477 9 10 9M12 3c1.433 0 2.812.332 4.04 1.04" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold text-white tracking-wider uppercase">Samarth</h1>
+                <p class="text-[10px] text-slate-400 tracking-wider font-semibold">AI CIVIC PRIORITY SYSTEM</p>
+            </div>
+        </div>
+
+        <!-- Dynamic Portal Swapper -->
+        <div class="flex items-center bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+            <button id="portal-btn-citizen" onclick="switchPortal('citizen')" class="px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-900/40">
+                Citizen Panel
+            </button>
+            <button id="portal-btn-mp" onclick="switchPortal('mp')" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-400 transition-all duration-300 hover:text-white">
+                MP Dashboard
+            </button>
+            <button id="portal-btn-admin" onclick="switchPortal('admin')" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-400 transition-all duration-300 hover:text-white">
+                Admin Portal
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Persistent Side Navigation bar -->
+        <aside class="w-64 bg-[#090d16] border-r border-[#1e293b] flex flex-col justify-between p-4 shrink-0">
+            <!-- Dynamic Navigation Groups -->
+            <div class="space-y-6">
+                <!-- Group 1: Citizen View Options -->
+                <div id="nav-group-citizen" class="space-y-1">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold pl-3 mb-2">Citizen Services</p>
+                    <button onclick="switchView('citizen', 'home')" id="btn-citizen-home" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 bg-slate-900/60 text-blue-500 border-l-2 border-blue-600 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        Portal Home
+                    </button>
+                    <button onclick="switchView('citizen', 'login')" id="btn-citizen-login" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                        Login/Register
+                    </button>
+                    <button onclick="switchView('citizen', 'submit')" id="btn-citizen-submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Submit Complaint
+                    </button>
+                    <button onclick="switchView('citizen', 'voice')" id="btn-citizen-voice" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                        Voice Complaint
+                    </button>
+                    <button onclick="switchView('citizen', 'chatbot')" id="btn-citizen-chatbot" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        AI Chatbot
+                    </button>
+                </div>
+
+                <!-- Group 2: MP Analytical Dashboard Options -->
+                <div id="nav-group-mp" class="space-y-1 hidden">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold pl-3 mb-2">MP Decision Suite</p>
+                    <button onclick="switchView('mp', 'overview')" id="btn-mp-overview" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/></svg>
+                        Dashboard Overview
+                    </button>
+                    <button onclick="switchView('mp', 'analysis')" id="btn-mp-analysis" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2"/></svg>
+                        Complaint Analysis
+                    </button>
+                    <button onclick="switchView('mp', 'map')" id="btn-mp-map" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                        Interactive Map
+                    </button>
+                    <button onclick="switchView('mp', 'ai-rec')" id="btn-mp-ai-rec" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        AI Recommendations
+                    </button>
+                    <button onclick="switchView('mp', 'budget')" id="btn-mp-budget" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Budget Planner
+                    </button>
+                    <button onclick="switchView('mp', 'tracker')" id="btn-mp-tracker" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        Project Tracker
+                    </button>
+                    <button onclick="switchView('mp', 'reports')" id="btn-mp-reports" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Reports
+                    </button>
+                </div>
+
+                <!-- Group 3: Admin Configuration Panel -->
+                <div id="nav-group-admin" class="space-y-1 hidden">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold pl-3 mb-2">Administration</p>
+                    <button onclick="switchView('admin', 'verify')" id="btn-admin-verify" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        Verify Complaints
+                    </button>
+                    <button onclick="switchView('admin', 'users')" id="btn-admin-users" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        Manage Users
+                    </button>
+                    <button onclick="switchView('admin', 'projects')" id="btn-admin-projects" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Manage Projects
+                    </button>
+                    <button onclick="switchView('admin', 'analytics')" id="btn-admin-analytics" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Analytics
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer Meta Detail -->
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-center">
+                <p class="text-[10px] text-slate-500 font-semibold uppercase">System Node Status</p>
+                <div class="flex items-center justify-center gap-2 mt-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span class="text-xs font-bold text-[#e2e8f0]">ONLINE</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Dynamic Context Content Window -->
+        <main class="flex-1 bg-slate-950 p-8 overflow-y-auto">
+            
+            <!-- ================================= CITIZEN PORTAL ================================= -->
+            <div id="portal-citizen" class="portal-section space-y-8">
+                <!-- Citizen: Home -->
+                <div id="view-citizen-home" class="view-panel space-y-6">
+                    <div class="p-8 bg-[#090d16] border border-[#1e293b] rounded-2xl relative overflow-hidden">
+                        <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-blue-600/10 rounded-full blur-3xl"></div>
+                        <h2 class="text-3xl font-extrabold text-white mb-2">Welcome to Samarth Civic Hub</h2>
+                        <p class="text-slate-400 max-w-2xl text-sm leading-relaxed">
+                            Submit community improvement demands instantly. Our AI models parse multi-lingual dialects, map geographic hotspot coordinates, and directly guide capital fund allocations.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl hover:border-blue-500/40 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-500 mb-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                            </div>
+                            <h3 class="text-base font-bold text-white mb-2">Voice Recognition Ingestion</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Speak natively in any language. Our system transcribes and auto-translates reports instantly.</p>
+                        </div>
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl hover:border-blue-500/40 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-500 mb-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </div>
+                            <h3 class="text-base font-bold text-white mb-2">Geospatial Demands</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Map coordinates are combined with census parameters to secure equitable development priority ranking.</p>
+                        </div>
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl hover:border-blue-500/40 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-500 mb-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            </div>
+                            <h3 class="text-base font-bold text-white mb-2">Direct MP Reporting</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">No intermediary red tape. Clean and actionable dashboards feed priorities straight into the MP decision chamber.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Citizen: Login / Register -->
+                <div id="view-citizen-login" class="view-panel hidden max-w-md mx-auto space-y-6">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-extrabold text-white">Join Citizen Hub</h2>
+                        <p class="text-slate-400 text-xs mt-1">Authenticate dynamically with OTP verification</p>
+                    </div>
+                    <div class="p-8 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-4 shadow-xl">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Mobile Number</label>
+                            <input type="tel" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200" placeholder="+91 98765 43210">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
+                            <input type="text" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200" placeholder="Anant Kumar">
+                        </div>
+                        <button onclick="alert('Session Authentication successfully initiated (Mock)')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all duration-300 transform active:scale-95 shadow-lg shadow-blue-900/30">
+                            Send Verification Code
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Citizen: Submit Complaint Form -->
+                <div id="view-citizen-submit" class="view-panel hidden max-w-2xl mx-auto space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">Formulate Infrastructure Suggestion</h2>
+                    <div class="p-8 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-5 shadow-xl">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Select Sector</label>
+                                <select id="complaint-sector" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-all">
+                                    <option>Water Infrastructure</option>
+                                    <option>Roads & Transport</option>
+                                    <option>Sanitation & Slums</option>
+                                    <option>Streetlights & Public Safety</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Specific Location Description</label>
+                                <input type="text" id="complaint-loc" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-all" placeholder="e.g. Ward 5 Main Road crossing">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Brief Overview Description</label>
+                            <textarea id="complaint-desc" rows="4" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-all" placeholder="Detail the structural issue, population impact, or hazard level..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Attach Photo Evidence</label>
+                            <div class="border border-dashed border-[#1e293b] rounded-xl p-6 text-center hover:border-blue-500/50 transition-all cursor-pointer">
+                                <svg class="w-8 h-8 text-slate-500 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                                <span class="text-xs text-slate-400">Drag & Drop images or <span class="text-blue-500">browse folders</span></span>
+                            </div>
+                        </div>
+                        <button onclick="submitGrievanceForm()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all duration-300 shadow-lg shadow-blue-900/30">
+                            Submit Form
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Citizen: Voice Complaint Portal -->
+                <div id="view-citizen-voice" class="view-panel hidden max-w-xl mx-auto space-y-6">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-extrabold text-white">Voice Suggestion Terminal</h2>
+                        <p class="text-slate-400 text-xs mt-1">Multi-Dialect Translation Pipeline</p>
+                    </div>
+                    <div class="p-8 bg-[#090d16] border border-[#1e293b] rounded-2xl flex flex-col items-center space-y-6 shadow-xl">
+                        <p class="text-xs text-slate-400 text-center leading-relaxed">
+                            Click the micro-phone interface, hold, and state your local infrastructure suggestion inside your native language dialect.
+                        </p>
+                        
+                        <div class="relative flex items-center justify-center py-4">
+                            <button id="voice-rec-btn" onclick="toggleVoiceSim()" class="w-24 h-24 rounded-full bg-rose-600 text-white flex items-center justify-center text-3xl shadow-lg border-4 border-slate-950 transition-all duration-300 focus:outline-none">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18.5a6.5 6.5 0 01-6.5-6.5h1m11 0a6.5 6.5 0 01-6.5 6.5M12 3a4 4 0 00-4 4v5a4 4 0 008 0V7a4 4 0 00-4-4z"/></svg>
+                            </button>
+                        </div>
+
+                        <div class="w-full bg-slate-950 rounded-xl border border-[#1e293b] p-4 text-center">
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Transcription Pipeline State</p>
+                            <p id="voice-pipeline-status" class="text-sm font-semibold text-slate-400 mt-1">Status: IDLE</p>
+                        </div>
+
+                        <!-- Real-time extraction container -->
+                        <div id="voice-output-card" class="w-full bg-[#020617] border border-[#1e293b] rounded-xl p-4 space-y-2 hidden">
+                            <div class="flex justify-between items-center border-b border-[#1e293b] pb-2">
+                                <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Extracted Data Schema</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/40 text-rose-500 border border-rose-800">AI Sentiment: High Urgency</span>
+                            </div>
+                            <div class="space-y-1 text-xs">
+                                <p class="text-slate-400"><strong class="text-white">Raw Audio Language:</strong> Telugu (Regional dialect)</p>
+                                <p class="text-slate-400"><strong class="text-white">Translated Transcript:</strong> "Our region is suffering from broken water pipes near block A. Please look into it immediately as mud water is polluting the pipeline."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Citizen: AI Chatbot Assistant -->
+                <div id="view-citizen-chatbot" class="view-panel hidden max-w-3xl mx-auto space-y-4">
+                    <h2 class="text-2xl font-extrabold text-white">Ask Samarth AI Assistant</h2>
+                    <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl flex flex-col h-[500px]">
+                        <!-- Conversation Thread Container -->
+                        <div id="citizen-chat-window" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                            <!-- Incoming Bot message -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-500 text-xs font-bold shrink-0">AI</div>
+                                <div class="p-3 bg-slate-950 border border-[#1e293b] text-sm text-[#e2e8f0] rounded-2xl rounded-tl-sm max-w-[80%] leading-relaxed">
+                                    Greetings! I am the Samarth Municipal AI parser. Type in any localized developmental feedback or type <strong class="text-blue-400">"status"</strong> to track the latest pipeline activities.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive inputs bar -->
+                        <div class="flex gap-2 pt-4 border-t border-[#1e293b] mt-4">
+                            <input id="citizen-chat-input" onkeydown="if(event.key === 'Enter') sendCitizenChat()" type="text" class="flex-1 bg-slate-950 border border-[#1e293b] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500" placeholder="Ask about roadworks, sanitation pipelines...">
+                            <button onclick="sendCitizenChat()" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-900/30 flex items-center gap-1">
+                                Send
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================= MP DASHBOARD ================================= -->
+            <div id="portal-mp" class="portal-section hidden space-y-8">
+                <!-- MP: Dashboard Overview -->
+                <div id="view-mp-overview" class="view-panel space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">MP Operational Intelligence Desk</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl relative overflow-hidden">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider font-bold">Unprocessed Submissions</p>
+                                    <h3 class="text-3xl font-extrabold text-white mt-1">2,842</h3>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950/40 text-blue-400 border border-blue-900">+12.4%</span>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-slate-900 flex justify-between text-[11px] text-slate-500 font-semibold">
+                                <span>Voice Ingestion: 62%</span>
+                                <span>WhatsApp: 38%</span>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl relative overflow-hidden">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider font-bold">Active Public Works</p>
+                                    <h3 class="text-3xl font-extrabold text-white mt-1">48 Projects</h3>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-900">89% Efficiency</span>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-slate-900 flex justify-between text-[11px] text-slate-500 font-semibold">
+                                <span>On Track: 42</span>
+                                <span>Risk Review: 6</span>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl relative overflow-hidden">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider font-bold">Assigned Budget Pool</p>
+                                    <h3 class="text-3xl font-extrabold text-white mt-1">$4.20M</h3>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/40 text-rose-400 border border-rose-900">65% Utilized</span>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-slate-900 flex justify-between text-[11px] text-slate-500 font-semibold">
+                                <span>Capital Pool: $1.47M Left</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Highlighted summary card -->
+                    <div class="p-6 bg-[#090d16] border border-blue-500/20 rounded-xl relative glow-blue flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h4 class="text-lg font-bold text-white mb-1">Top Actionable AI Recommendation</h4>
+                            <p class="text-xs text-slate-400 max-w-xl">
+                                System priority calculations indicate that the <strong class="text-white">Slum Sanitation Block Construction</strong> in Ward 1 requires immediate authorization. Demand weight and local vulnerability metrics currently average 97.4 points.
+                            </p>
+                        </div>
+                        <button onclick="switchView('mp', 'ai-rec')" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all shadow-md shrink-0">
+                            Inspect Recommendation Ledger
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MP: Complaint Analysis SVG Charts -->
+                <div id="view-mp-analysis" class="view-panel hidden space-y-8">
+                    <h2 class="text-2xl font-extrabold text-white">Dynamic Analytical Submissions Pipeline</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Chart 1: Donut breakdown -->
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl flex flex-col items-center">
+                            <h3 class="text-sm font-bold text-slate-300 self-start mb-6">Regional Submissions by Sector Type</h3>
+                            
+                            <!-- Premium SVG Donut Layout -->
+                            <div class="relative w-48 h-48">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <!-- Background tract -->
+                                    <circle class="text-slate-850" stroke="currentColor" stroke-width="4" fill="none" cx="18" cy="18" r="16"/>
+                                    <!-- Water sector: 40% (stroke-dasharray 40 60, offset 0) -->
+                                    <circle class="text-blue-500" stroke="currentColor" stroke-width="4" stroke-dasharray="40 100" stroke-dashoffset="0" fill="none" cx="18" cy="18" r="16"/>
+                                    <!-- Roads: 30% (stroke-dasharray 30 100, offset -40) -->
+                                    <circle class="text-indigo-500" stroke="currentColor" stroke-width="4" stroke-dasharray="30 100" stroke-dashoffset="-40" fill="none" cx="18" cy="18" r="16"/>
+                                    <!-- Sanitation: 20% (stroke-dasharray 20 100, offset -70) -->
+                                    <circle class="text-rose-500" stroke="currentColor" stroke-width="4" stroke-dasharray="20 100" stroke-dashoffset="-70" fill="none" cx="18" cy="18" r="16"/>
+                                    <!-- Public Safety: 10% (stroke-dasharray 10 100, offset -90) -->
+                                    <circle class="text-amber-500" stroke="currentColor" stroke-width="4" stroke-dasharray="10 100" stroke-dashoffset="-90" fill="none" cx="18" cy="18" r="16"/>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span class="text-2xl font-black text-white">40%</span>
+                                    <span class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Water (Lead)</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 w-full mt-6 text-xs border-t border-slate-900 pt-4">
+                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-blue-500"></span><span class="text-slate-400">Water (40%)</span></div>
+                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-indigo-500"></span><span class="text-slate-400">Roads (30%)</span></div>
+                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-rose-500"></span><span class="text-slate-400">Sanitation (20%)</span></div>
+                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-amber-500"></span><span class="text-slate-400">Public Safety (10%)</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: 6-Month Trend Area Chart -->
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl flex flex-col">
+                            <h3 class="text-sm font-bold text-slate-300 mb-6">Seasonal Demand Influx (Past 6 Months)</h3>
+                            
+                            <!-- SVG Grid Area Chart -->
+                            <div class="flex-1 w-full h-44 relative">
+                                <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <!-- Grid lines -->
+                                    <line x1="0" y1="20" x2="100" y2="20" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2"/>
+                                    <line x1="0" y1="50" x2="100" y2="50" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2"/>
+                                    <line x1="0" y1="80" x2="100" y2="80" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2"/>
+                                    
+                                    <!-- Gradient fill -->
+                                    <defs>
+                                        <linearGradient id="blueGlow" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4"/>
+                                            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <polygon points="0,95 20,70 40,85 60,40 80,50 100,20 100,95" fill="url(#blueGlow)"/>
+                                    
+                                    <!-- Line stroke -->
+                                    <polyline points="0,95 20,70 40,85 60,40 80,50 100,20" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                                </svg>
+                                
+                                <div class="flex justify-between text-[10px] text-slate-500 font-semibold uppercase mt-4">
+                                    <span>Jan</span>
+                                    <span>Feb</span>
+                                    <span>Mar</span>
+                                    <span>Apr</span>
+                                    <span>May</span>
+                                    <span>Jun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MP: Interactive Hotspot Map -->
+                <div id="view-mp-map" class="view-panel hidden space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">Municipal Hotspot Vector Layer</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Abstract Vector Map Canvas Grid -->
+                        <div class="lg:col-span-2 p-4 bg-[#090d16] border border-[#1e293b] rounded-2xl relative overflow-hidden h-[450px]">
+                            <!-- Visual representation grid lines overlay -->
+                            <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 opacity-20 pointer-events-none">
+                                <div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-b border-slate-700"></div>
+                                <div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-b border-slate-700"></div>
+                                <div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-b border-slate-700"></div>
+                                <div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-b border-slate-700"></div>
+                                <div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-r border-b border-slate-700"></div><div class="border-b border-slate-700"></div>
+                            </div>
+                            
+                            <!-- Static vector visual landmarks -->
+                            <div class="absolute top-[20%] left-[25%] px-3 py-1 bg-slate-950/80 border border-slate-800 text-[10px] text-slate-500 rounded font-bold uppercase tracking-wider">Sector A Landfills</div>
+                            <div class="absolute bottom-[25%] right-[20%] px-3 py-1 bg-slate-950/80 border border-slate-800 text-[10px] text-slate-500 rounded font-bold uppercase tracking-wider">Ward 5 Residential Block</div>
+
+                            <!-- Interactive Map coordinates overlays -->
+                            <!-- Point 1 -->
+                            <div onclick="selectHotspot('Ward 5 Water Pipeline Overhaul', 48, 'High Water Contamination, Pipeline Fractures')" class="absolute top-[35%] left-[45%] w-12 h-12 flex items-center justify-center cursor-pointer group">
+                                <span class="absolute w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500 animate-ping"></span>
+                                <span class="relative w-4 h-4 rounded-full bg-blue-600 border-2 border-white glow-blue"></span>
+                            </div>
+                            <!-- Point 2 -->
+                            <div onclick="selectHotspot('Slum Sanitation Block Construction', 92, 'Severe Sanitation Backlogs, Open Sewer Risks')" class="absolute top-[65%] left-[25%] w-12 h-12 flex items-center justify-center cursor-pointer group">
+                                <span class="absolute w-8 h-8 rounded-full bg-rose-500/20 border border-rose-500 animate-ping"></span>
+                                <span class="relative w-4 h-4 rounded-full bg-rose-600 border-2 border-white glow-red"></span>
+                            </div>
+                            <!-- Point 3 -->
+                            <div onclick="selectHotspot('Sector 3 Smart Grid Streetlighting', 14, 'Intermittent Grid Blackouts, High Crime Susceptibility')" class="absolute top-[48%] left-[70%] w-12 h-12 flex items-center justify-center cursor-pointer group">
+                                <span class="absolute w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500 animate-ping"></span>
+                                <span class="relative w-4 h-4 rounded-full bg-amber-600 border-2 border-white"></span>
+                            </div>
+
+                            <p class="absolute bottom-4 left-4 text-[10px] text-slate-400 font-bold uppercase bg-slate-950/95 px-3 py-1.5 border border-slate-800 rounded-lg">GIS Simulation Overlay Matrix</p>
+                        </div>
+
+                        <!-- Sidebar detail component -->
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-[#1e293b] pb-2">Cluster Metrics Inspections</h3>
+                                <div class="mt-4 space-y-4">
+                                    <div>
+                                        <p class="text-xs text-slate-500">Selected Hotspot Project</p>
+                                        <h4 id="map-project-name" class="text-base font-bold text-white mt-1">Select a map waypoint</h4>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-500">Total Dynamic Complaints</p>
+                                        <h4 id="map-complaint-count" class="text-lg font-black text-blue-500 mt-1">--</h4>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-500">Extracted System Diagnostics</p>
+                                        <p id="map-diagnostics" class="text-xs text-slate-400 mt-1.5 leading-relaxed">Click any blinking hotspot vector coordinate to display priority statistics.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg text-center">
+                                <p class="text-[10px] text-slate-400">Telemetry Data Synced</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MP: AI Recommendation Engine Sort Ledger -->
+                <div id="view-mp-ai-rec" class="view-panel hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-white">AI Synthesis Priority Ranking</h2>
+                            <p class="text-xs text-slate-400">Dynamic score calculation mapping real-time parameter variations</p>
+                        </div>
+                        <div class="px-4 py-2 bg-[#090d16] border border-blue-500/20 rounded-xl glow-blue">
+                            <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Formula: </span>
+                            <span class="text-xs text-slate-300 font-semibold">Demand (40%) + Gap (30%) + Urgency (30%)</span>
+                        </div>
+                    </div>
+
+                    <!-- Sorted Table -->
+                    <div class="bg-[#090d16] border border-[#1e293b] rounded-2xl overflow-hidden shadow-xl">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-[#1e293b] bg-slate-950/80">
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest pl-6">Rank</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Target Project</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Sector</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Parameters (D / G / U)</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right pr-6">AI Priority Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rec-ledger-body">
+                                <!-- Rendered dynamically by javascript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MP: Budget Planner Sliders -->
+                <div id="view-mp-budget" class="view-panel hidden space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">Dynamic Budget Matrix Allocation</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Weight control sliders -->
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-6">
+                            <h3 class="text-sm font-bold text-white border-b border-[#1e293b] pb-2">Weighted Parameter Controls</h3>
+                            
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-xs font-semibold">
+                                    <span class="text-slate-400">Citizen Demand Weight</span>
+                                    <span id="slider-val-demand" class="text-blue-500">40%</span>
+                                </div>
+                                <input type="range" id="weight-demand" min="0" max="100" value="40" oninput="adjustWeights('demand')" class="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-xs font-semibold">
+                                    <span class="text-slate-400">Infrastructure Gap Weight</span>
+                                    <span id="slider-val-gap" class="text-blue-500">30%</span>
+                                </div>
+                                <input type="range" id="weight-gap" min="0" max="100" value="30" oninput="adjustWeights('gap')" class="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-xs font-semibold">
+                                    <span class="text-slate-400">Demographic Urgency Weight</span>
+                                    <span id="slider-val-urgency" class="text-blue-500">30%</span>
+                                </div>
+                                <input type="range" id="weight-urgency" min="0" max="100" value="30" oninput="adjustWeights('urgency')" class="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            </div>
+
+                            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl text-center">
+                                <span class="text-[10px] text-slate-500 font-bold uppercase">Total Matrix Balance</span>
+                                <p id="weight-total-check" class="text-xs font-bold text-emerald-400 mt-0.5">100% Normalized</p>
+                            </div>
+                        </div>
+
+                        <!-- Realtime sorting visual ledger preview -->
+                        <div class="lg:col-span-2 p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-[#1e293b] pb-2">Dynamic Ranking Simulation Preview</h3>
+                            <div id="slider-preview-container" class="space-y-3">
+                                <!-- Loaded dynamically by prioritization javascript engine -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MP: Project Tracker Progress Panels -->
+                <div id="view-mp-tracker" class="view-panel hidden space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">Regional Project Lifecycle Monitoring</h2>
+                    <div class="space-y-4">
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="text-base font-bold text-white">Slum Sanitation Block Construction</h4>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-950/40 text-blue-400 border border-blue-900 mt-2 inline-block">Active Procurement Phase</span>
+                                </div>
+                                <span class="text-xl font-extrabold text-blue-500">88% Completed</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2.5 border border-[#1e293b] overflow-hidden">
+                                <div class="bg-blue-600 h-full rounded-full glow-blue" style="width: 88%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="text-base font-bold text-white">Ward 5 Water Pipeline Overhaul</h4>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-900 mt-2 inline-block">Testing & Integration Stage</span>
+                                </div>
+                                <span class="text-xl font-extrabold text-emerald-500">92% Completed</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2.5 border border-[#1e293b] overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full" style="width: 92%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="text-base font-bold text-white">Village Main Road Drainage & Asphalt</h4>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/40 text-amber-400 border border-amber-900 mt-2 inline-block">Structural Grading Ongoing</span>
+                                </div>
+                                <span class="text-xl font-extrabold text-amber-500">42% Completed</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2.5 border border-[#1e293b] overflow-hidden">
+                                <div class="bg-amber-500 h-full rounded-full" style="width: 42%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MP: Reports -->
+                <div id="view-mp-reports" class="view-panel hidden max-w-xl mx-auto space-y-6 text-center">
+                    <h2 class="text-2xl font-extrabold text-white">Executive Data Reports Suite</h2>
+                    <div class="p-8 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-4 shadow-xl">
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Compile all synthesized citizen metrics, prioritized municipal ledger indexes, and census maps.
+                        </p>
+                        <div class="flex flex-col gap-3 pt-2">
+                            <button onclick="alert('Compiling executive parliamentary report... (PDF)')" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-900/30">
+                                Download Comprehensive PDF Briefing
+                            </button>
+                            <button onclick="alert('Exporting localized GIS coordinates to GeoJSON...')" class="w-full py-3 bg-slate-950 hover:bg-slate-900 text-slate-300 border border-[#1e293b] rounded-xl text-sm font-semibold transition-all">
+                                Export Spatial Datasets (GeoJSON Vector)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================= ADMIN PORTAL ================================= -->
+            <div id="portal-admin" class="portal-section hidden space-y-8">
+                <!-- Admin: Verify Complaints -->
+                <div id="view-admin-verify" class="view-panel hidden space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">Unverified Civic Ingestion Gateway</h2>
+                    <div class="bg-[#090d16] border border-[#1e293b] rounded-2xl overflow-hidden shadow-xl">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-[#1e293b] bg-slate-950/80">
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest pl-6">Sector Target</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Extracted Translation Coordinates</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Telemetry Origin</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right pr-6">Validation Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="verify-ledger-body">
+                                <tr id="verify-row-1" class="border-b border-slate-900 hover:bg-slate-950/40 transition-colors">
+                                    <td class="p-4 font-bold text-white text-xs pl-6">Water Infrastructure</td>
+                                    <td class="p-4 text-xs text-slate-300">"Pipes are broken near community well. Water is polluted."</td>
+                                    <td class="p-4 text-xs text-slate-500 font-medium">Telugu Voice Note</td>
+                                    <td class="p-4 text-right pr-6 space-x-2">
+                                        <button onclick="approveGrievance('verify-row-1')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold uppercase transition-all shadow-md">Approve</button>
+                                        <button onclick="flagDuplicate('verify-row-1')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-[#1e293b] text-slate-300 rounded-lg text-[10px] font-bold uppercase transition-all">Flag Duplicate</button>
+                                    </td>
+                                </tr>
+                                <tr id="verify-row-2" class="border-b border-slate-900 hover:bg-slate-950/40 transition-colors">
+                                    <td class="p-4 font-bold text-white text-xs pl-6">Roads & Transport</td>
+                                    <td class="p-4 text-xs text-slate-300">"Deep pothole hazard near crossing causing traffic stalls."</td>
+                                    <td class="p-4 text-xs text-slate-500 font-medium">WhatsApp Media Pin</td>
+                                    <td class="p-4 text-right pr-6 space-x-2">
+                                        <button onclick="approveGrievance('verify-row-2')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold uppercase transition-all shadow-md">Approve</button>
+                                        <button onclick="flagDuplicate('verify-row-2')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-[#1e293b] text-slate-300 rounded-lg text-[10px] font-bold uppercase transition-all">Flag Duplicate</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin: Manage Users -->
+                <div id="view-admin-users" class="view-panel hidden space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">Operator Access Directory</h2>
+                    <div class="bg-[#090d16] border border-[#1e293b] rounded-2xl overflow-hidden shadow-xl">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-[#1e293b] bg-slate-950/80">
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest pl-6">Operator Name</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest">System Privilege Bounds</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Network Node Origin</th>
+                                    <th class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right pr-6">Status ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-900">
+                                    <td class="p-4 font-bold text-white text-xs pl-6">Aditya Sen</td>
+                                    <td class="p-4 text-xs text-slate-300">District Boundary Supervisor</td>
+                                    <td class="p-4 text-xs text-slate-500 font-semibold">Node-1A (Primary Block)</td>
+                                    <td class="p-4 text-right pr-6"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-900">ACTIVE</span></td>
+                                </tr>
+                                <tr class="border-b border-slate-900">
+                                    <td class="p-4 font-bold text-white text-xs pl-6">Priya Sharma</td>
+                                    <td class="p-4 text-xs text-slate-300">Translation Audit Operator</td>
+                                    <td class="p-4 text-xs text-slate-500 font-semibold">Node-3C (Remote Secure)</td>
+                                    <td class="p-4 text-right pr-6"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-900">ACTIVE</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin: Manage Projects -->
+                <div id="view-admin-projects" class="view-panel hidden max-w-xl mx-auto space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">Inject Administrative Project Directives</h2>
+                    <div class="p-8 bg-[#090d16] border border-[#1e293b] rounded-2xl space-y-4 shadow-xl">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Project Name</label>
+                            <input type="text" id="admin-proj-name" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500" placeholder="e.g. Ward 3 Waste Plant Overhaul">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1">Demand Input</label>
+                                <input type="number" id="admin-proj-demand" min="0" max="100" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-blue-500" value="80">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1">Gap Input</label>
+                                <input type="number" id="admin-proj-gap" min="0" max="100" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-blue-500" value="75">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1">Urgency Input</label>
+                                <input type="number" id="admin-proj-urgency" min="0" max="100" class="w-full bg-slate-950 border border-[#1e293b] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-blue-500" value="85">
+                            </div>
+                        </div>
+                        <button onclick="injectProject()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all duration-300 shadow-lg shadow-blue-900/30">
+                            Commit Project to Array Schema
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin: Analytics -->
+                <div id="view-admin-analytics" class="view-panel hidden space-y-6">
+                    <h2 class="text-2xl font-extrabold text-white">System Infrastructure Diagnostics</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl text-center">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Total API Queries</span>
+                            <h4 class="text-2xl font-black text-white mt-1">482,192</h4>
+                            <span class="text-[10px] text-emerald-400 mt-1 inline-block">100% Transactions Valid</span>
+                        </div>
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl text-center">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Average API Latency</span>
+                            <h4 class="text-2xl font-black text-blue-500 mt-1">230ms</h4>
+                            <span class="text-[10px] text-slate-500 mt-1 inline-block">Whisper Engine Translation</span>
+                        </div>
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl text-center">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Parser Success Rate</span>
+                            <h4 class="text-2xl font-black text-white mt-1">98.4%</h4>
+                            <span class="text-[10px] text-emerald-400 mt-1 inline-block">No packet droppings detected</span>
+                        </div>
+                        <div class="p-6 bg-[#090d16] border border-[#1e293b] rounded-xl text-center">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Server Uptime</span>
+                            <h4 class="text-2xl font-black text-emerald-500 mt-1">99.99%</h4>
+                            <span class="text-[10px] text-slate-500 mt-1 inline-block">Continuous node cycles</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JS Analytical Logic Controller -->
+    <script>
+        // Data Schemes Representation
+        let projects = [
+            { id: 1, name: "Ward 5 Water Pipeline Overhaul", sector: "Water", demand: 92, gap: 88, urgency: 95 },
+            { id: 2, name: "Village Main Road Drainage & Asphalt", sector: "Roads", demand: 85, gap: 70, urgency: 90 },
+            { id: 3, name: "Sector 3 Smart Grid Streetlighting", sector: "Public Safety", demand: 62, gap: 45, urgency: 50 },
+            { id: 4, name: "Slum Sanitation Block Construction", sector: "Sanitation", demand: 98, gap: 95, urgency: 99 }
+        ];
+
+        // Sliders config state parameters
+        let weights = {
+            demand: 0.4,
+            gap: 0.3,
+            urgency: 0.3
+        };
+
+        let voiceSimInterval = null;
+        let isRecordingSim = false;
+
+        // Initialize core application states
+        window.addEventListener('load', () => {
+            calculateAndRenderPriorities();
+        });
+
+        // Dynamic multi-role router
+        function switchPortal(portalId) {
+            // Unset top navbar tabs styling state
+            const buttons = ['citizen', 'mp', 'admin'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(`portal-btn-${id}`);
+                if (btn) {
+                    btn.className = "px-4 py-2 text-xs font-semibold rounded-lg text-slate-400 transition-all duration-300 hover:text-white";
+                }
+            });
+
+            // Set clicked tab to active design
+            const targetBtn = document.getElementById(`portal-btn-${portalId}`);
+            if (targetBtn) {
+                targetBtn.className = "px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-900/40 glow-blue";
+            }
+
+            // Hide and display core portal panels
+            document.querySelectorAll('.portal-section').forEach(p => p.classList.add('hidden'));
+            const targetPortal = document.getElementById(`portal-${portalId}`);
+            if (targetPortal) targetPortal.classList.remove('hidden');
+
+            // Toggle Sidebar Nav Groups visibility limits
+            document.querySelectorAll('.nav-group').forEach(group => group.classList.add('hidden'));
+            const targetNavGroup = document.getElementById(`nav-group-${portalId}`);
+            if (targetNavGroup) targetNavGroup.classList.remove('hidden');
+
+            // Route standard starting views immediately
+            if (portalId === 'citizen') switchView('citizen', 'home');
+            if (portalId === 'mp') switchView('mp', 'overview');
+            if (portalId === 'admin') switchView('admin', 'verify');
+        }
+
+        // Subnav views routing logic inside specific user roles
+        function switchView(portalId, viewId) {
+            // Remove active left margin indicators from navigation list items
+            const sidebarBtnContainer = document.getElementById(`nav-group-${portalId}`);
+            if (sidebarBtnContainer) {
+                sidebarBtnContainer.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-900/40 pl-4";
+                });
+            }
+
+            // Bind highlighted styling on newly selected nav trigger
+            const currentSelectedNavTrigger = document.getElementById(`btn-${portalId}-${viewId}`);
+            if (currentSelectedNavTrigger) {
+                currentSelectedNavTrigger.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 bg-slate-900/60 text-blue-500 border-l-2 border-blue-600 pl-4";
+            }
+
+            // Toggle view panels viewport state
+            document.querySelectorAll(`#portal-${portalId} .view-panel`).forEach(panel => panel.classList.add('hidden'));
+            const targetViewport = document.getElementById(`view-${portalId}-${viewId}`);
+            if (targetViewport) targetViewport.classList.remove('hidden');
+
+            // Force dynamic algorithms sync if targetting ledger or budget
+            if (viewId === 'ai-rec' || viewId === 'budget') {
+                calculateAndRenderPriorities();
+            }
+        }
+
+        // Calculation prioritized formula algorithm
+        function calculateAndRenderPriorities() {
+            // Recalculate composite weight attributes inside projects dataset
+            projects.forEach(p => {
+                p.score = parseFloat(((p.demand * weights.demand) + (p.gap * weights.gap) + (p.urgency * weights.urgency)).toFixed(1));
+            });
+
+            // Sort data structurally descending based on calculation output
+            const sortedProjects = [...projects].sort((a, b) => b.score - a.score);
+
+            // Render table ledger (MP Dashboard: AI Recommendations)
+            const ledgerBody = document.getElementById('rec-ledger-body');
+            if (ledgerBody) {
+                ledgerBody.innerHTML = '';
+                sortedProjects.forEach((proj, idx) => {
+                    const badgeClass = proj.score >= 85 ? 'bg-rose-950/40 text-rose-500 border-rose-800' : (proj.score >= 60 ? 'bg-amber-950/40 text-amber-500 border-amber-900' : 'bg-blue-950/40 text-blue-500 border-blue-900');
+                    const badgeText = proj.score >= 85 ? 'Critical' : (proj.score >= 60 ? 'High' : 'Normal');
+
+                    ledgerBody.innerHTML += `
+                        <tr class="border-b border-slate-900 hover:bg-slate-950/40 transition-colors">
+                            <td class="p-4 font-black text-white text-sm pl-6">${idx + 1}</td>
+                            <td class="p-4 text-xs font-bold text-white">${proj.name}</td>
+                            <td class="p-4 text-xs text-slate-300 font-semibold">${proj.sector}</td>
+                            <td class="p-4 text-xs text-slate-500 text-center font-medium">${proj.demand} / ${proj.gap} / ${proj.urgency}</td>
+                            <td class="p-4 text-right pr-6">
+                                <span class="px-2 py-1 rounded text-xs font-bold border ${badgeClass} inline-flex items-center gap-1.5 shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                    ${proj.score} - ${badgeText}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Render dynamic budget preview list (MP Dashboard: Budget Planner)
+            const sliderPreviewContainer = document.getElementById('slider-preview-container');
+            if (sliderPreviewContainer) {
+                sliderPreviewContainer.innerHTML = '';
+                sortedProjects.forEach((proj, idx) => {
+                    const colorBar = proj.score >= 85 ? 'bg-rose-500' : (proj.score >= 60 ? 'bg-amber-500' : 'bg-blue-500');
+                    sliderPreviewContainer.innerHTML += `
+                        <div class="p-4 bg-slate-950/50 border border-slate-900 rounded-xl space-y-2">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-bold text-white">${idx + 1}. ${proj.name}</span>
+                                <span class="font-extrabold text-blue-500">${proj.score} pts</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+                                <div class="${colorBar} h-full" style="width: ${proj.score}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Adjust interactive weights in compliance with normalization checks
+        function adjustWeights(targetSlider) {
+            const demandVal = parseFloat(document.getElementById('weight-demand').value) / 100;
+            const gapVal = parseFloat(document.getElementById('weight-gap').value) / 100;
+            const urgencyVal = parseFloat(document.getElementById('weight-urgency').value) / 100;
+
+            const targetVal = parseFloat(document.getElementById(`weight-${targetSlider}`).value) / 100;
+
+            // Simple auto-normalizer logic
+            const sumOfOthers = (targetSlider === 'demand' ? (gapVal + urgencyVal) : (targetSlider === 'gap' ? (demandVal + urgencyVal) : (demandVal + gapVal))) || 1;
+            const remaining = 1 - targetVal;
+
+            if (targetSlider === 'demand') {
+                weights.demand = targetVal;
+                weights.gap = parseFloat((gapVal * (remaining / sumOfOthers)).toFixed(2));
+                weights.urgency = parseFloat((urgencyVal * (remaining / sumOfOthers)).toFixed(2));
+            } else if (targetSlider === 'gap') {
+                weights.gap = targetVal;
+                weights.demand = parseFloat((demandVal * (remaining / sumOfOthers)).toFixed(2));
+                weights.urgency = parseFloat((urgencyVal * (remaining / sumOfOthers)).toFixed(2));
+            } else {
+                weights.urgency = targetVal;
+                weights.demand = parseFloat((demandVal * (remaining / sumOfOthers)).toFixed(2));
+                weights.gap = parseFloat((gapVal * (remaining / sumOfOthers)).toFixed(2));
+            }
+
+            // Re-sync visual slider indicators value texts
+            document.getElementById('slider-val-demand').innerText = Math.round(weights.demand * 100) + "%";
+            document.getElementById('slider-val-gap').innerText = Math.round(weights.gap * 100) + "%";
+            document.getElementById('slider-val-urgency').innerText = Math.round(weights.urgency * 100) + "%";
+
+            document.getElementById('weight-demand').value = Math.round(weights.demand * 100);
+            document.getElementById('weight-gap').value = Math.round(weights.gap * 100);
+            document.getElementById('weight-urgency').value = Math.round(weights.urgency * 100);
+
+            calculateAndRenderPriorities();
+        }
+
+        // Toggle simulation for Multilingual Voice recognition Ingestion
+        function toggleVoiceSim() {
+            const btn = document.getElementById('voice-rec-btn');
+            const status = document.getElementById('voice-pipeline-status');
+            const outputCard = document.getElementById('voice-output-card');
+
+            if (!isRecordingSim) {
+                isRecordingSim = true;
+                btn.className = "w-24 h-24 rounded-full bg-rose-600 text-white flex items-center justify-center text-3xl shadow-lg border-4 border-slate-950 transition-all duration-300 focus:outline-none recording-pulse glow-red";
+                status.innerText = "Listening to audio stream (Speak now)...";
+                status.className = "text-sm font-semibold text-rose-500 mt-1 animate-pulse";
+                outputCard.classList.add('hidden');
+            } else {
+                isRecordingSim = false;
+                btn.className = "w-24 h-24 rounded-full bg-rose-600 text-white flex items-center justify-center text-3xl shadow-lg border-4 border-slate-950 transition-all duration-300 focus:outline-none";
+                status.innerText = "Status: Translating & Ingesting via Whisper Engine...";
+                status.className = "text-sm font-semibold text-amber-500 mt-1";
+
+                setTimeout(() => {
+                    status.innerText = "Status: Complete. Ingestion Committed!";
+                    status.className = "text-sm font-semibold text-emerald-500 mt-1";
+                    outputCard.classList.remove('hidden');
+                }, 2000);
+            }
+        }
+
+        // Submits standard grievance form and appends it to verification table
+        function submitGrievanceForm() {
+            const sector = document.getElementById('complaint-sector').value;
+            const desc = document.getElementById('complaint-desc').value;
+            const loc = document.getElementById('complaint-loc').value;
+
+            if (!desc.trim()) {
+                alert("Please add detailed descriptions before submitting!");
+                return;
+            }
+
+            const randId = Math.floor(Math.random() * 1000) + 1000;
+            const verifyBody = document.getElementById('verify-ledger-body');
+            if (verifyBody) {
+                const tr = document.createElement('tr');
+                tr.id = `verify-row-${randId}`;
+                tr.className = "border-b border-slate-900 hover:bg-slate-950/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-white text-xs pl-6">${sector}</td>
+                    <td class="p-4 text-xs text-slate-300">"${desc} (${loc})"</td>
+                    <td class="p-4 text-xs text-slate-500 font-medium">Web Portal Form</td>
+                    <td class="p-4 text-right pr-6 space-x-2">
+                        <button onclick="approveGrievance('verify-row-${randId}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold uppercase transition-all shadow-md">Approve</button>
+                        <button onclick="flagDuplicate('verify-row-${randId}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-[#1e293b] text-slate-300 rounded-lg text-[10px] font-bold uppercase transition-all">Flag Duplicate</button>
+                    </td>
+                `;
+                verifyBody.prepend(tr);
+            }
+
+            alert("Your suggestion was securely filed to the unverified admin queue!");
+            switchPortal('citizen');
+        }
+
+        // Admin actions
+        function approveGrievance(rowId) {
+            alert("Record successfully approved and pushed into AI dynamic calculation array!");
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.style.opacity = '0.3';
+                row.querySelector('button').disabled = true;
+            }
+        }
+
+        function flagDuplicate(rowId) {
+            alert("Record flagged as redundant or duplicate.");
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.style.textDecoration = 'line-through';
+                row.style.opacity = '0.3';
+            }
+        }
+
+        // Admin Manual project injections
+        function injectProject() {
+            const name = document.getElementById('admin-proj-name').value;
+            const demand = parseInt(document.getElementById('admin-proj-demand').value);
+            const gap = parseInt(document.getElementById('admin-proj-gap').value);
+            const urgency = parseInt(document.getElementById('admin-proj-urgency').value);
+
+            if (!name.trim()) {
+                alert("Please add valid project names.");
+                return;
+            }
+
+            const newProj = {
+                id: projects.length + 1,
+                name: name,
+                sector: "Administrative Directives",
+                demand: demand,
+                gap: gap,
+                urgency: urgency
+            };
+
+            projects.push(newProj);
+            calculateAndRenderPriorities();
+            alert("Project successfully committed directly inside calculation array!");
+            switchPortal('mp');
+            switchView('mp', 'ai-rec');
+        }
+
+        // Active coordinates tracking selection inside mock spatial map
+        function selectHotspot(projName, compCount, diagnostics) {
+            document.getElementById('map-project-name').innerText = projName;
+            document.getElementById('map-complaint-count').innerText = `${compCount} sub-incident coordinates`;
+            document.getElementById('map-diagnostics').innerText = diagnostics;
+        }
+
+        // Handles AI Chat interaction simulation with auto responses
+        function sendCitizenChat() {
+            const input = document.getElementById('citizen-chat-input');
+            const chatBox = document.getElementById('citizen-chat-window');
+            
+            if (!input.value.trim()) return;
+
+            // Generate user talk dialogue bubble component
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex items-start gap-3 justify-end";
+            userMsg.innerHTML = `
+                <div class="p-3 bg-blue-600 text-sm text-white rounded-2xl rounded-tr-sm max-w-[80%] leading-relaxed">
+                    ${input.value}
+                </div>
+            `;
+            chatBox.appendChild(userMsg);
+            
+            const promptLower = input.value.toLowerCase();
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Respond dynamically
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = "flex items-start gap-3";
+                
+                let botReply = "I've logged this metadata suggestion for our regional processing systems. Type 'status' to review database variables.";
+                if (promptLower.includes('status')) {
+                    botReply = "Status: Node Server operational. Currently parsing <strong class='text-blue-400'>4 Projects</strong>. Slum Sanitation Blocks hold the highest prioritizations of 97.4 pts.";
+                } else if (promptLower.includes('road') || promptLower.includes('water')) {
+                    botReply = "Our hotspot spatial sensors show high complaints density for infrastructure in Ward 5. Check out the 'Interactive Map' on the MP Dashboard.";
+                }
+
+                aiMsg.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-500 text-xs font-bold shrink-0">AI</div>
+                    <div class="p-3 bg-slate-950 border border-[#1e293b] text-sm text-[#e2e8f0] rounded-2xl rounded-tl-sm max-w-[80%] leading-relaxed">
+                        ${botReply}
+                    </div>
+                `;
+                chatBox.appendChild(aiMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
