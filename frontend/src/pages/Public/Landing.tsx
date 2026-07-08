@@ -73,7 +73,7 @@ export const Landing = () => {
 
   const stats = [
     { value: "40%", label: "Reduction in Project Delays" },
-    { value: "$18.4M", label: "Allocated MPLAD Funds Managed" },
+    { value: "₹32.4 Cr", label: "Allocated MPLAD Funds Managed" },
     { value: "12+", label: "Integrated State Departments" },
     { value: "98.9%", label: "Accuracy in Duplication Detection" }
   ];
@@ -369,7 +369,7 @@ export const Landing = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-[#2F5D62]/5 border border-[#2F5D62]/10 p-3 rounded-xl">
                     <p className="text-[10px] uppercase font-bold text-[#2F5D62]">Total Budget</p>
-                    <p className="text-lg font-bold text-[#1F2937] mt-0.5">$5.2M</p>
+                    <p className="text-lg font-bold text-[#1F2937] mt-0.5">₹32.4 Cr</p>
                     <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
                       <div className="bg-[#2F5D62] h-full rounded-full" style={{ width: '70%' }}></div>
                     </div>
@@ -651,7 +651,7 @@ export const Landing = () => {
                         <td className="py-4 px-4 font-semibold text-white">#PROP-2026-092</td>
                         <td className="py-4 px-4">Rural Drinking Water Pipeline</td>
                         <td className="py-4 px-4 text-[#7CC6FE] font-bold">96/100</td>
-                        <td className="py-4 px-4">$450,000</td>
+                        <td className="py-4 px-4">₹38 Lakhs</td>
                         <td className="py-4 px-4">
                           <span className="bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full text-xs font-semibold">Approved</span>
                         </td>
@@ -660,7 +660,7 @@ export const Landing = () => {
                         <td className="py-4 px-4 font-semibold text-white">#PROP-2026-081</td>
                         <td className="py-4 px-4">High School Smart Labs</td>
                         <td className="py-4 px-4 text-[#7CC6FE] font-bold">89/100</td>
-                        <td className="py-4 px-4">$120,000</td>
+                        <td className="py-4 px-4">₹12 Lakhs</td>
                         <td className="py-4 px-4">
                           <span className="bg-yellow-500/10 text-yellow-400 px-2.5 py-1 rounded-full text-xs font-semibold">Under Audit</span>
                         </td>
@@ -669,7 +669,7 @@ export const Landing = () => {
                         <td className="py-4 px-4 font-semibold text-white">#PROP-2026-074</td>
                         <td className="py-4 px-4">Solar Street Lighting G-3</td>
                         <td className="py-4 px-4 text-[#7CC6FE] font-bold">91/100</td>
-                        <td className="py-4 px-4">$85,000</td>
+                        <td className="py-4 px-4">₹8.5 Lakhs</td>
                         <td className="py-4 px-4">
                           <span className="bg-[#2F5D62]/20 text-[#7CC6FE] px-2.5 py-1 rounded-full text-xs font-semibold">Synced</span>
                         </td>
