@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', sans-serif;
+  --color-surface: #ffffff;
+  --color-background: #F7F9F8;
+  --color-border: #DCE5E2;
+  --color-text: #4B5563;
+  --color-heading: #1F2937;
+  --color-primary: #2F5D62;
+  --color-primary-hover: #1e3f43;
+}
+
+.dark {
+  --color-surface: #151D30;
+  --color-background: #0B0F19;
+  --color-border: #212F4D;
+  --color-text: #9CA3AF;
+  --color-heading: #F9FAFB;
+  --color-primary: #4B8B93;
+  --color-primary-hover: #5d9ea6;
+  background-color: #0B0F19 !important;
+  color: #F9FAFB !important;
+}
+
+html {
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark theme overrides for Tailwind arbitrary hex values and layout classes */
+.dark .bg-\[\#F7F9F8\],
+.dark .bg-gray-50 {
+  background-color: var(--color-background) !important;
+}
+.dark .bg-white {
+  background-color: var(--color-surface) !important;
+}
+.dark .border-\[\#DCE5E2\],
+.dark .border-gray-200 {
+  border-color: var(--color-border) !important;
+}
+.dark .text-\[\#1F2937\],
+.dark .text-gray-900 {
+  color: var(--color-heading) !important;
+}
+.dark .text-\[\#4B5563\],
+.dark .text-gray-600 {
+  color: var(--color-text) !important;
+}
+.dark .bg-\[\#2F5D62\] {
+  background-color: var(--color-primary) !important;
+}
+.dark .text-\[\#2F5D62\] {
+  color: var(--color-primary) !important;
+}
+.dark .border-\[\#2F5D62\] {
+  border-color: var(--color-primary) !important;
+}
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: var(--color-surface) !important;
+  color: var(--color-heading) !important;
+  border-color: var(--color-border) !important;
+}
+.dark .shadow-xs,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Hide Google Translate top banner bar and tooltips completely */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame,
+#goog-gt-tt,
+.goog-te-banner,
+.goog-te-menu-value,
+.skiptranslate,
+iframe.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
+}
+.goog-tooltip, .goog-tooltip:hover {
+  display: none !important;
+  visibility: hidden !important;
+}
+.goog-text-highlight {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+
